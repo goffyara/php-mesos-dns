@@ -23,14 +23,13 @@ class MesosDns
 
     public function __construct($config = [])
     {
-        if (empty($config['url'])) {
-            //default value
-            $config['url'] = 'http://marathon.mesos:8123/v1/';
-        }
-
         if (empty($config['method'])) {
             //default value
             $config['method'] = 'api';
+        }
+
+        if ($config['method'] == 'api' && empty($config['url'])) {
+            throw new \Exception("For 'api' method url required");
         }
 
         $this->url = $config['url'];

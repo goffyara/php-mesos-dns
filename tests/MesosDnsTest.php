@@ -31,6 +31,20 @@ class MesosDnsTest extends TestCase {
         $this->assertAttributeEquals($fixtures['method'], 'method', $MesosDns);
     }
 
+    /**
+      * @expectedException     Exception
+      */
+    public function testConstuctorWithApiMethodAndEmptyUrl() {
+        $classname = 'mesosdns\MesosDns';
+
+        $fixtures = [
+            'method' => 'api'
+        ];
+
+        $MesosDns = new MesosDns($fixtures);
+        $this->expectException();
+    }
+
     public function testGetApiMethod() {
 
         $fixtures = [

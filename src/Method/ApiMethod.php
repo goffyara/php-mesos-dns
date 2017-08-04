@@ -10,15 +10,10 @@ class ApiMethod implements MethodInterface
 {
     private $client;
 
-    public function __construct($url = null)
+    public function __construct($url)
     {
-        if (empty($url)) {
-            $url = 'http://marathon.mesos:8123/v1/';
-        }
-
-        $this->url = $url;
         $this->client = new Client([
-            'base_uri' => $this->url
+            'base_uri' => $url
         ]);
     }
 
@@ -32,12 +27,10 @@ class ApiMethod implements MethodInterface
         }
 
         $uri .= "_tcp.marathon.mesos";
-        $response = $this->client->get($uri);
 
-        $body = $response->getBody();
-        $body = json_decode((string) $body, true);
-
+        $body = $this->getResponseAsArray($uri);
         $Instances = $this->prepareInstances($body);
+
         if (empty($Instances)) {
              throw new NotFoundServiceException("Service not found", $service, $group, get_class($this));
         }
@@ -69,5 +62,14 @@ class ApiMethod implements MethodInterface
         }
 
         return $Instances;
+    }
+
+    protected function getResponseAsArray($uri)
+    {
+        $response = $this->client->get($uri);
+
+        $body = $response->getBody();
+        $body = json_decode((string) $body, true);
+        return $body;
     }
 }
