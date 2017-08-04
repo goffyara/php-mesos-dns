@@ -7,6 +7,7 @@ php-mesos-dns
 [![Total Downloads](https://poser.pugx.org/goffyara/php-mesos-dns/downloads)](https://packagist.org/packages/goffyara/php-mesos-dns)
 [![Monthly Downloads](https://poser.pugx.org/goffyara/php-mesos-dns/d/monthly)](https://packagist.org/packages/goffyara/php-mesos-dns)
 [![Daily Downloads](https://poser.pugx.org/goffyara/php-mesos-dns/d/daily)](https://packagist.org/packages/goffyara/php-mesos-dns)
+[![Build Status](https://travis-ci.org/goffyara/php-mesos-dns.svg?branch=master)](https://travis-ci.org/goffyara/php-mesos-dns)
 
 ## Install
 
