@@ -10,12 +10,14 @@ class NotFoundServiceException extends \Exception
     private $method;
     private $service;
     private $group;
+    private $port;
 
-    public function __construct($message, $service, $group, $method, $code = 0, \Exception $previous = null)
+    public function __construct($message, $service, $group, $port, $method, $code = 0, \Exception $previous = null)
     {
         $this->method = $method;
         $this->service = $service;
         $this->group = $group;
+        $this->port = $port;
 
         parent::__construct($message, $code, $previous);
     }
@@ -34,6 +36,6 @@ class NotFoundServiceException extends \Exception
     public function __toString()
     {
         return parent::__toString() . PHP_EOL .
-        $this->method . ' -- Service: ' . $this->service . ' with group: ' . $this->group . ' not found!';
+        $this->method . ' -- Service: ' . $this->service . '( port: '. $this->port .') with group: ' . $this->group . '  not found!';
     }
 }

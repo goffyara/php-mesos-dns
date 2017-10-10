@@ -3,48 +3,33 @@ namespace mesosdns;
 
 class Service
 {
-    public $Instances = [];
-    public $service;
-    public $group;
+    protected $Instances = [];
 
-    public function __construct(array $Instances, $service, $group = '')
+    public function __construct(array $Instances)
     {
-        $this->service = $service;
-        $this->group = $group;
         $this->Instances = $Instances;
     }
 
-    public function getInstance($n = null)
+    public function getInstance($n = 0)
     {
-        if(!is_null($n)) {
-            $Instances = sort($this->Instances);
-            if (!isset($this->Instances[$n])) {
-                throw new \Exception("Instance with index $n not found");
-            }
-            return $this->Instances[$n];
+        if (!isset($this->Instances[$n])) {
+            throw new \Exception("Instance with index $n not found");
         }
-
-        return current($this->Instances);
+        return $this->Instances[$n];
     }
 
     public function getPort($n = 0)
     {
-        $Instance = $this->getInstance();
-        $port = $Instance->getPort($n);
-        return $port;
+        return $this->getInstance($n)->getPort();
     }
 
-    public function getHost()
+    public function getHost($n = 0)
     {
-        $Instance = $this->getInstance();
-        $host = $Instance->host;
-        return $host;
+        return $this->getInstance($n)->getHost();
     }
 
-    public function getIp()
+    public function getIp($n = 0)
     {
-        $Instance = $this->getInstance();
-        $ip = $Instance->ip;
-        return $ip;
+        return $this->getInstance($n)->getIp();
     }
 }

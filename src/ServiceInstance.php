@@ -6,20 +6,16 @@ class ServiceInstance
     public $service;
     public $host;
     public $ip;
-    public $ports = [];
+    public $port;
 
-    public function addPort(int $port)
+    public function getPort()
     {
-        if(empty($port)) {
-            throw new \Exception("port can not be empty");
-        }
-        array_push($this->ports, $port);
-        sort($this->ports);
+        return $this->port;
     }
 
-    public function getPort($n = 0)
+    public function getHost()
     {
-        return $this->ports[$n];
+        return $this->host;
     }
 
     public function getIp()

@@ -10,39 +10,34 @@ class ApiMethod implements MethodInterface
 {
     private $client;
 
-    public function __construct($url = null)
+    public function __construct($url)
     {
-        if (empty($url)) {
-            $url = 'http://marathon.mesos:8123/v1/';
-        }
-
-        $this->url = $url;
         $this->client = new Client([
-            'base_uri' => $this->url
+            'base_uri' => $url
         ]);
     }
 
-    public function findService($service, $group = '')
+    public function findService($service, $port, $group = '')
     {
-        $uri = "services/_";
-        $uri .= "$service.";
+        $uri = "services/";
+        $uri .= "_$port.";
+        $uri .= "_$service.";
 
         if (!empty($group)) {
             $uri .= "$group.";
         }
 
         $uri .= "_tcp.marathon.mesos";
-        $response = $this->client->get($uri);
 
-        $body = $response->getBody();
-        $body = json_decode((string) $body, true);
+        $body = $this->getResponseAsArray($uri);
 
         $Instances = $this->prepareInstances($body);
         if (empty($Instances)) {
-             throw new NotFoundServiceException("Service not found", $service, $group, get_class($this));
+            throw new NotFoundServiceException("Service not found", $service, $group, $port, get_class($this));
         }
 
-        $Service = new Service($Instances, $service, $group);
+        $Service = new Service($Instances);
+
         return $Service;
     }
 
@@ -55,19 +50,25 @@ class ApiMethod implements MethodInterface
             if (empty($host)) {
                 continue;
             }
-            if (!array_key_exists($host, $Instances)) {
-                $Instance = new ServiceInstance;
-                $Instance->service = $instance['service'];
-                $Instance->host = $instance['host'];
-                $Instance->ip = $instance['ip'];
-                $Instance->ports = [ (int) $instance['port']];
-                $Instances[$host] = $Instance;
-            } else {
-                $Instance = $Instances[$host];
-                $Instance->addPort($instance['port']);
-            }
+
+            $Instance = new ServiceInstance;
+            $Instance->service = $instance['service'];
+            $Instance->host = $instance['host'];
+            $Instance->ip = $instance['ip'];
+            $Instance->port = $instance['port'];
+
+            array_push($Instances, $Instance);
         }
 
         return $Instances;
+    }
+
+    protected function getResponseAsArray($uri)
+    {
+        $response = $this->client->get($uri);
+
+        $body = $response->getBody();
+        $body = json_decode((string) $body, true);
+        return $body;
     }
 }

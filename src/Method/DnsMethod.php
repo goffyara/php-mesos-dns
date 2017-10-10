@@ -7,24 +7,25 @@ use mesosdns\Exception\NotFoundServiceException;
 
 class DnsMethod implements MethodInterface
 {
-
-    public function findService($service, $group = '')
+    public function findService($service, $port, $group = '')
     {
-        $hostname = "_$service.";
+        $uri = "services/";
+        $uri .= "_$port.";
+        $uri .= "_$service.";
+
         if (!empty($group)) {
-            $hostname .= "$group.";
+            $uri .= "$group.";
         }
 
-        $hostname .= "_tcp.marathon.mesos";
-
+        $uri .= "_tcp.marathon.mesos";
         $response = dns_get_record($hostname, DNS_SRV);
-
         $Instances = $this->prepareInstances($response);
+
         if (empty($Instances)) {
-             throw new NotFoundServiceException("Service not found", $service, $group, get_class($this));
+            throw new NotFoundServiceException("Service not found", $service, $group, $port, get_class($this));
         }
 
-        $Service = new Service($Instances, $service, $group);
+        $Service = new Service($Instances);
         return $Service;
     }
 
@@ -37,17 +38,14 @@ class DnsMethod implements MethodInterface
             if (empty($target)) {
                 continue;
             }
-            if (!array_key_exists($target, $Instances)) {
-                $Instance = new ServiceInstance;
-                $Instance->service = $instance['host'];
-                $Instance->host = $instance['host'];
-                $Instance->ip = $instance['target'];
-                $Instance->ports = [ (int) $instance['port']];
-                $Instances[$target] = $Instance;
-            } else {
-                $Instance = $Instances[$target];
-                $Instance->addPort($instance['port']);
-            }
+
+            $Instance = new ServiceInstance;
+            $Instance->service = $instance['host'];
+            $Instance->host = $instance['host'];
+            $Instance->ip = $instance['target'];
+            $Instance->port = $instance['port'];
+
+            array_push($Instances, $Instance);
         }
 
         return $Instances;

@@ -32,7 +32,6 @@ class MesosDns
             //default value
             $config['method'] = 'api';
         }
-
         $this->url = $config['url'];
         $this->method = $config['method'];
     }
@@ -43,9 +42,9 @@ class MesosDns
      * @param  string $group   group name
      * @return object Service
      */
-    public function getService($service, $group = '')
+    public function getService($service, $port, $group = '')
     {
-       $Service = $this->getMethod()->findService($service, $group);
+       $Service = $this->getMethod()->findService($service, $port, $group);
        return $Service;
     }
 
